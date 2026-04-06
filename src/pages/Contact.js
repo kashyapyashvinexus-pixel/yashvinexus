@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  FiMail, FiPhone, FiMapPin, FiClock, FiSend, FiArrowUpRight,
+  FiMail, FiPhone, FiMapPin, FiClock, FiSend,
   FiCheckCircle, FiAlertCircle, FiLoader, FiChevronDown
 } from 'react-icons/fi';
 import './Contact.css';
@@ -44,28 +44,29 @@ function useContactForm() {
 
   const set = useCallback((field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user types
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   }, [errors]);
 
   const touch = useCallback((field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
-    // Validate on blur
     const errs = validate({ ...form });
     if (errs[field]) setErrors((prev) => ({ ...prev, [field]: errs[field] }));
-    else setErrors((prev) => { const n = { ...prev }; delete n[field]; return n; });
+    else setErrors((prev) => {
+      const n = { ...prev };
+      delete n[field];
+      return n;
+    });
   }, [form]);
 
   const submit = useCallback(async (e) => {
     e.preventDefault();
-    // Mark all required as touched
+
     const allTouched = REQUIRED.reduce((acc, k) => ({ ...acc, [k]: true }), {});
     setTouched(allTouched);
 
     const errs = validate(form);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
-      // Shake the first error field
       const firstErrField = document.querySelector('.cf-field--error input, .cf-field--error textarea');
       if (firstErrField) {
         firstErrField.focus();
@@ -78,10 +79,8 @@ function useContactForm() {
     setErrors({});
 
     try {
-      // Simulate API call — replace with real endpoint
       await new Promise((resolve, reject) => {
         setTimeout(() => {
-          // 95% success simulation
           Math.random() > 0.05 ? resolve() : reject(new Error('Network error'));
         }, 1800);
       });
@@ -178,7 +177,6 @@ function ContactForm() {
   const { form, errors, touched, status, set, touch, submit, reset } = useContactForm();
   const formRef = useRef(null);
 
-  // Animate form on scroll
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(formRef.current, {
@@ -417,7 +415,6 @@ function FAQSection() {
   const toggle = (i) => {
     setOpen((prev) => {
       const newVal = prev === i ? null : i;
-      // Animate answer
       const el = document.querySelector(`#faq-ans-${i}`);
       if (el) {
         if (newVal === i) {
@@ -441,6 +438,7 @@ function FAQSection() {
           {faqs.map((faq, i) => (
             <div key={i} className={`faq-item ${open === i ? 'faq-item--open' : ''}`}>
               <button
+                type="button"
                 className="faq-item__q"
                 onClick={() => toggle(i)}
                 aria-expanded={open === i}
